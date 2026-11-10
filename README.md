@@ -2,11 +2,18 @@
 
 gcube GPU 플랫폼용 기본 이미지 모음입니다. PyTorch·TensorFlow·CUDA 등 공식 환경에 gcube 공통 설정만 얹어, 실습 환경의 출발점으로 사용합니다.
 
+모든 이미지는 같은 이름·태그로 두 레지스트리에 있습니다.
+
+| 레지스트리 | 주소 형식 |
+|---|---|
+| GitHub Container Registry | `ghcr.io/data-alliance/<이미지>:<태그>` |
+| Docker Hub | `gcubeai/<이미지>:<태그>` ([hub.docker.com/u/gcubeai](https://hub.docker.com/u/gcubeai)) |
+
 ## 이미지 라인업
 
 ### PyTorch — `gcube-pytorch-<torch>-cuda<cuda>`
 
-PyTorch·CUDA·cuDNN·Python이 포함되어 있습니다.
+PyTorch·CUDA·cuDNN·Python이 포함되어 있습니다. PyTorch 공식 이미지(`pytorch/pytorch`)를 기반으로 하며, Ubuntu 버전은 공식 이미지를 따릅니다(PyTorch 2.8·2.9: Ubuntu 22.04, 2.10·2.11: Ubuntu 24.04).
 
 | PyTorch \ CUDA | 12.6 | 12.8 | 13.0 |
 |---|:---:|:---:|:---:|
@@ -19,7 +26,7 @@ PyTorch·CUDA·cuDNN·Python이 포함되어 있습니다.
 
 ### Ubuntu+CUDA — `gcube-ubuntu<ubuntu>-cuda<cuda>`
 
-CUDA만 포함되어 있어, 사용자가 원하는 프레임워크를 직접 설치하는 환경입니다.
+CUDA만 포함되어 있어, 사용자가 원하는 프레임워크를 직접 설치하는 환경입니다. NVIDIA 공식 CUDA 이미지(`nvidia/cuda`)를 기반으로 하며, NVIDIA가 제공하는 Ubuntu·CUDA 조합만 만듭니다.
 
 | Ubuntu \ CUDA | 12.6 | 12.8 | 13.0 | 13.5 |
 |---|:---:|:---:|:---:|:---:|
@@ -33,7 +40,9 @@ Ubuntu 26.04는 NVIDIA가 CUDA 13.3 이상만 제공하여 CUDA 13.5 조합으�
 
 ### TensorFlow — `gcube-tensorflow-<tf>-cuda<cuda>`
 
-TensorFlow·CUDA·cuDNN·Python이 포함되어 있습니다.
+TensorFlow·CUDA·cuDNN·Python이 포함되어 있습니다. `gcube-ubuntu24.04-cuda12.8` 위에 NVIDIA NGC TensorFlow 25.02 컨테이너의 TensorFlow를 옮겨 담은 이미지입니다(Ubuntu 24.04).
+
+TensorFlow 공식 pip 패키지는 CUDA 12.5 기준이라 RTX 50 시리즈(Blackwell)를 지원하지 않아, CUDA 12.8로 빌드된 NGC 버전을 사용합니다. NGC TensorFlow 컨테이너는 25.02가 마지막 릴리스이므로 이 방식은 TensorFlow 2.17에 머뭅니다.
 
 | TensorFlow | CUDA | 태그 |
 |---|---|---|
@@ -41,7 +50,7 @@ TensorFlow·CUDA·cuDNN·Python이 포함되어 있습니다.
 
 ## 사용
 
-gcube 워크로드에서 직접 사용하거나, 자체 Docker 이미지를 빌드할 때 `FROM`으로 사용합니다.
+gcube 워크로드에서 직접 사용하거나, 자체 Docker 이미지를 빌드할 때 `FROM`으로 사용합니다. 아래는 GitHub Container Registry 주소이며, Docker Hub에서는 `ghcr.io/data-alliance/`를 `gcubeai/`로 바꿔 사용합니다. `:devel` 태그도 같은 방식으로 사용할 수 있습니다.
 
 ```
 # PyTorch
@@ -68,6 +77,12 @@ ghcr.io/data-alliance/gcube-ubuntu26.04-cuda13.5:runtime
 
 # TensorFlow
 ghcr.io/data-alliance/gcube-tensorflow-2.17-cuda12.8:runtime
+```
+
+```dockerfile
+# 예: 베이스 이미지 위에 패키지를 추가한 이미지 만들기
+FROM gcubeai/gcube-pytorch-2.11-cuda12.8:runtime
+RUN pip install --no-cache-dir transformers
 ```
 
 ## 공통 설정
