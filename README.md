@@ -21,12 +21,15 @@ PyTorch·CUDA·cuDNN·Python이 포함되어 있습니다.
 
 CUDA만 포함되어 있어, 사용자가 원하는 프레임워크를 직접 설치하는 환경입니다.
 
-| Ubuntu \ CUDA | 12.6 | 12.8 | 13.0 |
-|---|:---:|:---:|:---:|
-| 22.04 | O | O | O |
-| 24.04 | O | O | O |
+| Ubuntu \ CUDA | 12.6 | 12.8 | 13.0 | 13.5 |
+|---|:---:|:---:|:---:|:---:|
+| 22.04 | O | O | O | — |
+| 24.04 | O | O | O | — |
+| 26.04 | — | — | — | O |
 
 각 이미지마다 `:runtime` / `:devel` 두 태그 제공.
+
+Ubuntu 26.04는 NVIDIA가 CUDA 13.3 이상만 제공하여 CUDA 13.5 조합으로 제공합니다. 기본 Python은 3.14이며, CUDA 13.5를 지원하는 NVIDIA 드라이버(`nvidia-smi`의 CUDA 버전 13.5 이상)가 필요합니다.
 
 ### TensorFlow — `gcube-tensorflow-<tf>-cuda<cuda>`
 
@@ -61,6 +64,7 @@ ghcr.io/data-alliance/gcube-ubuntu22.04-cuda13.0:runtime
 ghcr.io/data-alliance/gcube-ubuntu24.04-cuda12.6:runtime
 ghcr.io/data-alliance/gcube-ubuntu24.04-cuda12.8:runtime
 ghcr.io/data-alliance/gcube-ubuntu24.04-cuda13.0:runtime
+ghcr.io/data-alliance/gcube-ubuntu26.04-cuda13.5:runtime
 
 # TensorFlow
 ghcr.io/data-alliance/gcube-tensorflow-2.17-cuda12.8:runtime

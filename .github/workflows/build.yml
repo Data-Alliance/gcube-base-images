@@ -13,11 +13,11 @@ on:
         default: all
       cuda:
         type: choice
-        options: [all, "12.6", "12.8", "13.0"]
+        options: [all, "12.6", "12.8", "13.0", "13.5"]
         default: all
       ubuntu:
         type: choice
-        options: [all, "22.04", "24.04"]
+        options: [all, "22.04", "24.04", "26.04"]
         default: all
       variant:
         type: choice
@@ -54,12 +54,15 @@ jobs:
           U = os.environ.get("IN_UBUNTU", "all")
           V = os.environ.get("IN_VARIANT", "all")
           PT_PATCH = {"2.8": "2.8.0", "2.9": "2.9.1", "2.10": "2.10.0", "2.11": "2.11.0"}
-          CU_PATCH = {"12.6": "12.6.3", "12.8": "12.8.0", "13.0": "13.0.0"}
+          CU_PATCH = {"12.6": "12.6.3", "12.8": "12.8.0", "13.0": "13.0.0", "13.5": "13.5.0"}
+          # Ubuntu/CUDA pairs actually published as nvidia/cuda images.
+          # Ubuntu 26.04 only has CUDA 13.3+; we add 13.5 for 26.04 only.
+          UBUNTU_CUDA = {"22.04": ["12.6", "12.8", "13.0"], "24.04": ["12.6", "12.8", "13.0"], "26.04": ["13.5"]}
           def keep(sel, val):
               return sel == "all" or sel == val
           ubuntu = []
-          for c in ["12.6", "12.8", "13.0"]:
-              for u in ["22.04", "24.04"]:
+          for u, cudas in UBUNTU_CUDA.items():
+              for c in cudas:
                   for v in ["runtime", "devel"]:
                       if not keep(S, "ubuntu"): continue
                       if not keep(C, c): continue
