@@ -78,7 +78,7 @@ ghcr.io/data-alliance/gcube-tensorflow-2.17-cuda12.8:runtime
 
 | 변수 | 기본값 | 설명 |
 |---|---|---|
-| `GIT_CLONE_REPO` | (없음) | 워크로드 시작 시 `/workspace`에 자동 clone할 저장소 URL |
+| `GIT_CLONE_REPO` | (없음) | 워크로드 시작 시 `/workspace`에 자동 clone할 저장소 URL. 네트워크 연결이 늦게 열리는 노드를 위해 실패 시 최대 1분간 재시도 |
 | `GIT_USER_NAME` | (없음) | git 커밋 작성자 이름 |
 | `GIT_USER_EMAIL` | (없음) | git 커밋 작성자 이메일 |
 | `GIT_TOKEN` | (없음) | git 인증 토큰(PAT). private 저장소 clone/push 시 필요 |
