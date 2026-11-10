@@ -1,0 +1,51 @@
+name: mirror base images to Docker Hub organization
+
+# One-off copy of already-built base images from GHCR to the gcubeai Docker Hub
+# organization, without rebuilding. Regular builds (build.yml) push there automatically.
+
+on:
+  workflow_dispatch:
+    inputs:
+      images:
+        type: string
+        description: 'Space-separated <name>:<tag> list'
+        default: 'gcube-pytorch-2.11-cuda12.8:runtime gcube-pytorch-2.11-cuda13.0:runtime gcube-ubuntu24.04-cuda12.8:runtime gcube-ubuntu24.04-cuda13.0:runtime gcube-tensorflow-2.17-cuda12.8:runtime'
+
+env:
+  REGISTRY: ghcr.io
+  DOCKERHUB_ORG: gcubeai
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+      - name: Log in to Docker Hub organization
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKERHUB_ORG }}
+          password: ${{ secrets.DOCKERHUB_ORG_TOKEN }}
+      - name: Copy images
+        env:
+          IMAGES: ${{ inputs.images }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          OWNER_LC="${OWNER,,}"
+          for img in $IMAGES; do
+            SRC="${REGISTRY}/${OWNER_LC}/${img}"
+            DST="${DOCKERHUB_ORG}/${img}"
+            echo "== $SRC -> $DST"
+            docker pull "$SRC"
+            docker tag "$SRC" "$DST"
+            docker push "$DST"
+            docker rmi "$SRC" "$DST" || true
+          done
